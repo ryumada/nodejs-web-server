@@ -1,64 +1,33 @@
-/* -------------------------------------------------------------------------- */
-/*                    Writable Stream for writing Response                    */
-/* -------------------------------------------------------------------------- */
-
 const http = require('http');
 
 const requestListener = (request, response) => {
-  response.setHeader('Content-Type', 'text/html');
+  response.setHeader('Content-Type', 'application/json');
 
   const { method, url } = request;
 
-  if(url === '/') {
-    if(method === 'GET') {
+  if (url === '/') {
+    if (method === 'GET') {
       response.statusCode = 200;
-      response.write('<!DOCTYPE html>');
-      response.write('<html lang="en">');
-      response.write('<head>');
-      response.write('  <meta charset="UTF-8">');
-      response.write('  <meta http-equiv="X-UA-Compatible" content="IE=edge">');
-      response.write('  <meta name="viewport" content="width=device-width, initial-scale=1.0">');
-      response.write('  <title>Document</title>');
-      response.write('</head>');
-      response.write('<body>');
-      response.write('<h1>This is a homepage!</h1>');
-      response.write('</body>');
-      return response.end('</html>');
+      return response.end(JSON.stringify({
+        message: 'This is a homepage!',
+      }));
     }
 
     response.statusCode = 400;
-    response.write('<!DOCTYPE html>');
-    response.write('<html lang="en">');
-    response.write('<head>');
-    response.write('  <meta charset="UTF-8">');
-    response.write('  <meta http-equiv="X-UA-Compatible" content="IE=edge">');
-    response.write('  <meta name="viewport" content="width=device-width, initial-scale=1.0">');
-    response.write('  <title>Document</title>');
-    response.write('</head>');
-    response.write('<body>');
-    response.write('<h1>Page cannot be accessed by other request.</h1>');
-    response.write('</body>');
-    return response.end('</html>');
+    return response.end(JSON.stringify({
+      message: 'Page cannot be accessed by other request.',
+    }));
   }
 
-  if(url === '/about') {
-    if(method === 'GET') {
+  if (url === '/about') {
+    if (method === 'GET') {
       response.statusCode = 200;
-      response.write('<!DOCTYPE html>');
-      response.write('<html lang="en">');
-      response.write('<head>');
-      response.write('  <meta charset="UTF-8">');
-      response.write('  <meta http-equiv="X-UA-Compatible" content="IE=edge">');
-      response.write('  <meta name="viewport" content="width=device-width, initial-scale=1.0">');
-      response.write('  <title>Document</title>');
-      response.write('</head>');
-      response.write('<body>');
-      response.write('<h1>Hello, this is an about page!</h1>');
-      response.write('</body>');
-      return response.end('</html>');
+      return response.end(JSON.stringify({
+        message: 'Hello, this is an about page!',
+      }));
     }
-    
-    if(method === 'POST') {
+
+    if (method === 'POST') {
       let body = [];
 
       request.on('data', (chunk) => {
@@ -69,49 +38,22 @@ const requestListener = (request, response) => {
         body = Buffer.concat(body).toString();
         const { name } = JSON.parse(body);
         response.statusCode = 200;
-        response.write('<!DOCTYPE html>');
-        response.write('<html lang="en">');
-        response.write('<head>');
-        response.write('  <meta charset="UTF-8">');
-        response.write('  <meta http-equiv="X-UA-Compatible" content="IE=edge">');
-        response.write('  <meta name="viewport" content="width=device-width, initial-scale=1.0">');
-        response.write('  <title>Document</title>');
-        response.write('</head>');
-        response.write('<body>');
-        response.write(`<h1>Hi ${name}, this is an about page.</h1>`);
-        response.write('</body>');
-        return response.end('</html>');
+        response.end(JSON.stringify({
+          message: `Hi ${name}, this is an about page.`,
+        }));
       });
     }
 
     response.statusCode = 400;
-    response.write('<!DOCTYPE html>');
-    response.write('<html lang="en">');
-    response.write('<head>');
-    response.write('  <meta charset="UTF-8">');
-    response.write('  <meta http-equiv="X-UA-Compatible" content="IE=edge">');
-    response.write('  <meta name="viewport" content="width=device-width, initial-scale=1.0">');
-    response.write('  <title>Document</title>');
-    response.write('</head>');
-    response.write('<body>');
-    response.write('<h1>Page cannot be accessed by other request.</h1>');
-    response.write('</body>');
-    return response.end('</html>');
+    return response.end(JSON.stringify({
+      message: 'Page cannot be accessed by other request.',
+    }));
   }
 
   response.statusCode = 404;
-  response.write('<!DOCTYPE html>');
-  response.write('<html lang="en">');
-  response.write('<head>');
-  response.write('  <meta charset="UTF-8">');
-  response.write('  <meta http-equiv="X-UA-Compatible" content="IE=edge">');
-  response.write('  <meta name="viewport" content="width=device-width, initial-scale=1.0">');
-  response.write('  <title>Document</title>');
-  response.write('</head>');
-  response.write('<body>');
-  response.write('<h1>Page Not Found!</h1>');
-  response.write('</body>');
-  return response.end('</html>');
+  return response.end(JSON.stringify({
+    message: 'Page Not Found!',
+  }));
 }
 
 const server = http.createServer(requestListener);
