@@ -1,27 +1,43 @@
 const http = require('http');
 
 const requestListener = (request, response) => {
-  const {method} = request;
   response.setHeader('Content-Type', 'text/html');
   response.statusCode = 200;
 
-  if(method === 'GET') {
-    response.end('<h1>Hello!</h1>');
+  const { method, url } = request;
+
+  if(url === '/') {
+    if(method === 'GET') {
+      return response.end('<h1>This is a homepage!</h1>');
+    }
+
+    return response.end('<h1>Page cannot be accessed by other request.</h1>');
   }
 
-  if(method === 'POST') {
-    let body = [];
+  if(url === '/about') {
+    if(method === 'GET') {
+      return response.end('<h1>Hello, this is an about page!</h1>');
+    }
 
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    });
+    
+    if(method === 'POST') {
+      let body = [];
 
-    request.on('end', () => {
-      body = Buffer.concat(body).toString();
-      const {name} = JSON.parse(body);
-      response.end(`<h1>Hai ${name}!</h1>`);
-    });
+      request.on('data', (chunk) => {
+        body.push(chunk);
+      });
+
+      return request.on('end', () => {
+        body = Buffer.concat(body).toString();
+        const { name } = JSON.parse(body);
+        response.end(`<h1>Hi ${name}, this is an about page.</h1>`);
+      });
+    }
+
+    return response.end('<h1>Page cannot be accessed by other request.</h1>');
   }
+
+  return response.end('<h1>Page Not Found!</h1>');
 }
 
 const server = http.createServer(requestListener);
@@ -32,6 +48,3 @@ const host = 'localhost';
 server.listen(port, host, () => {
   console.log(`The Server is running at http://${host}:${port}`);
 });
-
-// Try the POST Methods by running this shell script, after you run npm run start
-// curl -X POST -H "Content-Type: application/json" http://localhost:5000 -d "{\"name\": \"Ryumada\"}"
